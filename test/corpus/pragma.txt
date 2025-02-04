@@ -1,0 +1,14 @@
+===============
+lang version
+===============
+
+pragma language_version >= 0.14.0;
+
+---
+
+(source_file
+  (pelt
+    (pragma
+      (id)
+      (greater_than_or_equal)
+      (version))))
