@@ -13,7 +13,7 @@ module.exports = grammar({
   rules: {
     // Compact (program)
     //
-    // program 	→	  pelt … pelt  eof
+    // program → pelt … pelt eof
     source_file: ($) => repeat($.pelt),
 
     // Program-element (pelt)
