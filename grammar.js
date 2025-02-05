@@ -36,10 +36,10 @@ module.exports = grammar({
         $.pragma,
         $.incld,
         $.mdefn,
-        // $.idecl,
-        // $.xdecl,
-        // $.ldecl,
-        // $.lconstructor,
+        $.idecl,
+        $.xdecl,
+        $.ldecl,
+        $.lconstructor,
         // $.cdefn,
         // $.edecl,
         // $.wdecl,
@@ -134,12 +134,284 @@ module.exports = grammar({
     //               → tvar-name
     generic_param: ($) => choice(seq("#", $.tvar_name), $.tvar_name),
 
+    // Import-declaration (idecl)
+    //
+    // idecl → import import-name gargs^opt prefix^opt ;
+    idecl: ($) =>
+      seq("import", $.import_name, optional($.gargs), optional($.prefix), ";"),
+
+    // Import-name (import-name)
+    //
+    // import-name → id
+    //             → file
+    import_name: ($) => choice($.id, $.file),
+
+    // Generic-argument-list (gargs)
+    //
+    // gargs → < garg , … , garg >
+    gargs: ($) => seq("<", commaSep1($.garg), ">"),
+
+    // Import-prefix (prefix)
+    //
+    // prefix → prefix id
+    prefix: ($) => seq("prefix", $.id),
+
     // Export-modifier (export)
     //
     // export → export
     export: ($) => "export",
 
+    // Sealed-modifier (sealed)
+    //
+    // sealed → sealed
+    sealed: ($) => "sealed",
+
+    // Export-declaration (xdecl)
+    //
+    // xdecl → export { id , … , id } ;^opt
+    xdecl: ($) => seq("export", "{", commaSep1($.id), "}", optional(";")),
+
+    // Ledger-declaration (ldecl)
+    //
+    // ldecl → exportopt sealed^opt ledger id : type ;
+    ldecl: ($) =>
+      seq(
+        optional($.export),
+        optional($.sealed),
+        "ledger",
+        $.id,
+        ":",
+        $.type,
+        ";",
+      ),
+
+    // Constructor (lconstructor)
+    //
+    // lconstructor → constructor ( parg , … , parg ) block ;opt
+    lconstructor: ($) =>
+      seq("constructor", "(", commaSep1($.parg), ")", $.block, optional(";")),
+
+    // Pattern-argument (parg)
+    //
+    // parg → pattern : type
+    parg: ($) => seq($.pattern, ":", $.type),
+
+    // Type (type)
+    //
+    // type →	tref
+    //      →	Boolean
+    //      →	Field
+    //      →	Uint < tsize >
+    //      →	Uint < tsize .. tsize >
+    //      →	Bytes < tsize >
+    //      →	Opaque < str >
+    //      →	Vector < tsize , type >
+    //      →	[ type , … , type ]
+    type: ($) =>
+      choice(
+        $.tref,
+        "Boolean",
+        "Field",
+        seq("Uint", "<", $.tsize, ">"),
+        seq("Uint", "<", $.tsize, "..", $.tsize, ">"),
+        seq("Bytes", "<", $.tsize, ">"),
+        seq("Opaque", "<", $.str, ">"),
+        seq("Vector", "<", $.tsize, ",", $.type, ">"),
+        seq("[", commaSep1($.type), "]"),
+      ),
+
+    // Type-reference (tref)
+    //
+    // tref → id gargs^opt
+    tref: ($) => seq($.id, optional($.gargs)),
+
+    // Type-size (tsize)
+    //
+    // tsize → nat
+    //       → id
+    tsize: ($) => choice($.nat, $.id),
+
+    // Generic-argument (garg)
+    //
+    // garg → nat
+    //      → type
+    garg: ($) => choice($.nat, $.type),
+
+    // Block (block)
+    //
+    // block → { stmt … stmt }
+    block: ($) => seq("{", repeat($.stmt), "}"),
+
+    // Statement (stmt)
+    //
+    // stmt → expr = expr ;
+    //      → expr += expr ;
+    //      → expr -= expr ;
+    //      → expr-seq ;
+    //      → return expr-seq ;
+    //      → return ;
+    //      → if ( expr-seq ) stmt else stmt
+    //      → if ( expr-seq ) stmt
+    //      → for ( const id of nat .. nat ) stmt
+    //      → for ( const id of expr-seq ) stmt
+    //      → assert expr str ;
+    //      → const pattern = expr ;
+    //      → const pattern : type = expr ;
+    //      → block
+    stmt: ($) =>
+      choice(
+        seq($.expr, "=", $.expr, ";"),
+        seq($.expr, "+=", $.expr, ";"),
+        seq($.expr, "-=", $.expr, ";"),
+        seq($.expr_seq, ";"),
+        seq("return", $.expr_seq, ";"),
+        seq("return", ";"),
+        seq("if", "(", $.expr_seq, ")", $.stmt, "else", $.stmt),
+        seq("if", "(", $.expr_seq, ")", $.stmt),
+        seq("for", "(", "const", $.id, "of", $.nat, "..", $.nat, ")", $.stmt),
+        seq("for", "(", "const", $.id, "of", $.expr_seq, ")", $.stmt),
+        seq("assert", $.expr, $.str, ";"),
+        seq("const", $.pattern, "=", $.expr, ";"),
+        seq("const", $.pattern, ":", $.type, "=", $.expr, ";"),
+        $.block,
+      ),
+
+    // Pattern (pattern)
+    //
+    // pattern → id
+    //        → [ pattern-tuple-elt , … , pattern-tuple-elt ]
+    //        → { pattern-struct-elt , … , pattern-struct-elt }
+    pattern: ($) =>
+      choice(
+        $.id,
+        seq("[", commaSep1($.pattern_tuple_elt), "]"),
+        seq("{", commaSep1($.pattern_struct_elt), "}"),
+      ),
+
+    // Pattern-tuple-element (pattern-tuple-elt)
+    //
+    // pattern-tuple-elt → (empty)
+    //                   → pattern
+    pattern_tuple_elt: ($) =>
+      choice(
+        "", // empty
+        $.pattern,
+      ),
+
+    // Pattern-struct-element (pattern-struct-elt)
+    //
+    // pattern-struct-elt → id
+    //                    → id : pattern
+    pattern_struct_elt: ($) => choice($.id, seq($.id, ":", $.pattern)),
+
+    // Expression-sequence (expr-seq)
+    //
+    // expr-seq → expr
+    //         → expr , …¹ , expr , expr
+    expr_seq: ($) =>
+      choice($.expr, seq($.expr, repeat1(seq(",", $.expr)), ",", $.expr)),
+
+    // Expression (expr)
+    //
+    // expr → expr0 ? expr : expr
+    //      → expr0
+    expr: ($) => choice(seq($._expr0, "?", $.expr, ":", $.expr), $._expr0),
+
+    // Expression0 (expr0)
+    //
+    // expr0 → expr0 || expr1
+    //       → expr1
+    _expr0: ($) => prec.left(choice(seq($._expr0, $.or, $._expr1), $._expr1)),
+
+    // Expression1 (expr1)
+    //
+    // expr1 → expr1 && expr2
+    //       → expr2
+    _expr1: ($) => prec.left(choice(seq($._expr1, $.and, $._expr2), $._expr2)),
+
+    // Expression2 (expr2)
+    //
+    // expr2 → expr2 == expr3
+    //       → expr2 != expr3
+    //       → expr3
+    _expr2: ($) =>
+      prec.left(
+        choice(
+          seq($._expr2, $.equals, $._expr3),
+          seq($._expr2, $.not_equals, $._expr3),
+          $._expr3,
+        ),
+      ),
+
+    // Expression3 (expr3)
+    //
+    // expr3 → expr4 < expr4
+    //       → expr4 <= expr4
+    //       → expr4 >= expr4
+    //       → expr4 > expr4
+    //       → expr4
+    _expr3: ($) =>
+      prec.left(
+        choice(
+          seq($._expr4, $.less_than, $._expr4),
+          seq($._expr4, $.less_than_or_equal, $._expr4),
+          seq($._expr4, $.greater_than_or_equal, $._expr4),
+          seq($._expr4, $.greater_than, $._expr4),
+          $._expr4,
+        ),
+      ),
+
+    // Expression4 (expr4)
+    //
+    // expr4 → expr4 as type
+    //       → expr5
+    _expr4: ($) => prec.left(choice(seq($._expr4, "as", $.type), $._expr5)),
+
+    // Expression5 (expr5)
+    //
+    // expr5 → expr5 + expr6
+    //       → expr5 - expr6
+    //       → expr6
+    _expr5: ($) =>
+      prec.left(
+        choice(
+          seq($._expr5, "+", $._expr6),
+          seq($._expr5, "-", $._expr6),
+          $._expr6,
+        ),
+      ),
+
+    // Expression6 (expr6)
+    //
+    // expr6 → expr6 * expr7
+    //       → expr7
+    _expr6: ($) => prec.left(choice(seq($._expr6, "*", $._expr7), $._expr7)),
+
+    // Expression7 (expr7)
+    //
+    // expr7 → ! expr7
+    //       → expr8
+    _expr7: ($) => choice(seq($.not, $._expr7), $._expr8),
+
+    // Expression8 (expr8)
+    //
+    // expr8 → expr8 [ nat ]
+    //       → expr8 . id
+    //       → expr8 . id ( expr , … , expr )
+    //       → term
+    _expr8: ($) =>
+      prec.left(
+        choice(
+          seq($._expr8, "[", $.nat, "]"),
+          seq($._expr8, ".", $.id),
+          seq($._expr8, ".", $.id, "(", commaSep1($.expr), ")"),
+          $.term,
+        ),
+      ),
+
     // OPS
+    equals: ($) => "==",
+    not_equals: ($) => "!=",
     greater_than: ($) => ">",
     less_than: ($) => "<",
     greater_than_or_equal: ($) => ">=",
