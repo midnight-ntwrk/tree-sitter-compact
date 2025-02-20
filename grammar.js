@@ -204,7 +204,7 @@ module.exports = grammar({
     //
     // lconstructor → constructor ( parg , … , parg ) block ;opt
     lconstructor: ($) =>
-      seq("constructor", "(", commaSep1($.parg), ")", $.block, optional(";")),
+      seq("constructor", "(", commaSep($.parg), ")", $.block, optional(";")),
 
     // Circuit-definition (cdefn)
     //
@@ -251,7 +251,7 @@ module.exports = grammar({
         $.id,
         optional($.gparams),
         "(",
-        commaSep1($.arg),
+        commaSep($.arg),
         ")",
         ":",
         $.type,
@@ -281,7 +281,7 @@ module.exports = grammar({
         "circuit",
         $.id,
         "(",
-        commaSep1($.arg),
+        commaSep($.arg),
         ")",
         ":",
         $.type,
