@@ -10,11 +10,21 @@
 module.exports = grammar({
   name: "compact",
 
+  conflicts: ($) => [
+    [$.fun, $.term, $.tref],
+    [$.fun, $.term, $.pattern],
+    [$.term, $.pattern],
+    [$.tref],
+    [$.fun, $.term],
+    [$.fun, $.pattern],
+    [$.stmt],
+  ],
+
   rules: {
     // Compact (program)
     //
     // program → pelt … pelt eof
-    source_file: ($) => repeat($.pelt),
+    source_file: ($) => repeat($._pelt),
 
     // Program-element (pelt)
     //
@@ -31,7 +41,7 @@ module.exports = grammar({
     //  	  →	ecdecl
     //  	  →	struct
     //  	  →	enumdef
-    pelt: ($) =>
+    _pelt: ($) =>
       choice(
         $.pragma,
         $.incld,
@@ -40,12 +50,12 @@ module.exports = grammar({
         $.xdecl,
         $.ldecl,
         $.lconstructor,
-        // $.cdefn,
-        // $.edecl,
-        // $.wdecl,
-        // $.ecdecl,
-        // $.struct,
-        // $.enumdef,
+        $.cdefn,
+        $.edecl,
+        $.wdecl,
+        $.ecdecl,
+        $.struct,
+        $.enumdef,
       ),
 
     // Pragma rules
@@ -116,10 +126,10 @@ module.exports = grammar({
       seq(
         optional($.export),
         "module",
-        $.module_name,
+        $._module_name,
         optional($.gparams),
         "{",
-        repeat($.pelt),
+        repeat($._pelt),
         "}",
       ),
 
@@ -132,7 +142,7 @@ module.exports = grammar({
     //
     // generic-param → # tvar-name
     //               → tvar-name
-    generic_param: ($) => choice(seq("#", $.tvar_name), $.tvar_name),
+    generic_param: ($) => choice(seq("#", $._tvar_name), $._tvar_name),
 
     // Import-declaration (idecl)
     //
@@ -166,6 +176,11 @@ module.exports = grammar({
     // sealed → sealed
     sealed: ($) => "sealed",
 
+    // Pure-modifier (pure)
+    //
+    // pure → pure
+    pure: ($) => "pure",
+
     // Export-declaration (xdecl)
     //
     // xdecl → export { id , … , id } ;^opt
@@ -190,6 +205,130 @@ module.exports = grammar({
     // lconstructor → constructor ( parg , … , parg ) block ;opt
     lconstructor: ($) =>
       seq("constructor", "(", commaSep1($.parg), ")", $.block, optional(";")),
+
+    // Circuit-definition (cdefn)
+    //
+    // cdefn → export^opt  pure^opt circuit function-name gparams^opt ( parg , … , parg ) : type block
+    cdefn: ($) =>
+      seq(
+        optional($.export),
+        optional($.pure),
+        "circuit",
+        $._function_name,
+        optional($.gparams),
+        "(",
+        commaSep($.parg),
+        ")",
+        ":",
+        $.type,
+        $.block,
+      ),
+
+    // External-declaration (edecl)
+    //
+    // edecl → export^opt circuit id gparams^opt ( arg , … , arg ) : type ;
+    edecl: ($) =>
+      seq(
+        optional($.export),
+        "circuit",
+        $._function_name,
+        optional($.gparams),
+        "(",
+        commaSep($.arg),
+        ")",
+        ":",
+        $.type,
+        ";",
+      ),
+
+    // Witness-declaration (wdecl)
+    //
+    // wdecl → export^opt witness id gparams^opt ( arg , … , arg ) : type ;
+    wdecl: ($) =>
+      seq(
+        optional($.export),
+        "witness",
+        $.id,
+        optional($.gparams),
+        "(",
+        commaSep1($.arg),
+        ")",
+        ":",
+        $.type,
+        ";",
+      ),
+
+    // External-contract-declaration (ecdecl)
+    //
+    // ecdecl	→ export^opt contract contract-name { ecdecl-circuit … ecdecl-circuit } ;^opt
+    ecdecl: ($) =>
+      seq(
+        optional($.export),
+        "contract",
+        $._contract_name,
+        "{",
+        repeat($.ecdecl_circuit),
+        "}",
+        optional(";"),
+      ),
+
+    // External-contract-circuit (ecdecl-circuit)
+    //
+    // ecdecl-circuit →	 pure^opt circuit id ( arg , … , arg ) : type ;
+    ecdecl_circuit: ($) =>
+      seq(
+        optional($.pure),
+        "circuit",
+        $.id,
+        "(",
+        commaSep1($.arg),
+        ")",
+        ":",
+        $.type,
+        ";",
+      ),
+
+    // Structure-definition (struct)
+    //
+    // struct →	export^opt struct struct-name gparams^opt { arg ; … ; arg ;^opt } ;^opt
+    //        →	export^opt struct struct-name gparams^opt { arg , … , arg  ,^opt } ;^opt
+    struct: ($) =>
+      seq(
+        optional($.export),
+        "struct",
+        $._struct_name,
+        optional($.gparams),
+        choice($._struct_body_semicolon, $._struct_body_comma),
+        optional(";"),
+      ),
+
+    // { arg ; … ; arg ;^opt }
+    _struct_body_semicolon: ($) =>
+      seq("{", repeat(seq($.arg, ";")), optional(";"), "}"),
+
+    // { arg , … , arg ,^opt }
+    _struct_body_comma: ($) =>
+      prec(1, seq("{", repeat(seq($.arg, ",")), optional(","), "}")),
+
+    // Enum-definition (enumdef)
+    //
+    // enumdef → export^opt enum enum-name { id , …¹ , id ,^opt } ;^opt
+    enumdef: ($) =>
+      seq(
+        optional($.export),
+        "enum",
+        $._enum_name,
+        "{",
+        commaSep1($.id),
+        optional(","),
+        "}",
+        optional(";"),
+      ),
+
+    // Argument (arg)
+    //
+    // arg → id : type
+    arg: ($) => prec(1, seq($.id, ":", $.type)),
 
     // Pattern-argument (parg)
     //
@@ -217,7 +356,7 @@ module.exports = grammar({
         seq("Bytes", "<", $.tsize, ">"),
         seq("Opaque", "<", $.str, ">"),
         seq("Vector", "<", $.tsize, ",", $.type, ">"),
-        seq("[", commaSep1($.type), "]"),
+        seq("[", commaSep($.type), "]"),
       ),
 
     // Type-reference (tref)
@@ -284,7 +423,7 @@ module.exports = grammar({
     pattern: ($) =>
       choice(
         $.id,
-        seq("[", commaSep1($.pattern_tuple_elt), "]"),
+        seq("[", optional(commaSep($.pattern_tuple_elt)), "]"),
         seq("{", commaSep1($.pattern_struct_elt), "}"),
       ),
 
@@ -292,11 +431,7 @@ module.exports = grammar({
     //
     // pattern-tuple-elt → (empty)
     //                   → pattern
-    pattern_tuple_elt: ($) =>
-      choice(
-        "", // empty
-        $.pattern,
-      ),
+    pattern_tuple_elt: ($) => $.pattern,
 
     // Pattern-struct-element (pattern-struct-elt)
     //
@@ -409,6 +544,87 @@ module.exports = grammar({
         ),
       ),
 
+    // Term (term)
+    //
+    // term → lit
+    //      → default < type >
+    //      → map ( fun , expr , …¹ , expr )
+    //      → fold ( fun , expr , expr , …¹ , expr )
+    //      → fun ( expr , … , expr )
+    //      → disclose ( expr )
+    //      → tref { struct-arg , … , struct-arg }
+    //      → [ expr , … , expr ,opt ]
+    //      → id
+    //      → ( expr-seq )
+    term: ($) =>
+      choice(
+        $.lit, // Literal (true, false, nat, str, pad)
+        seq("default", "<", $.type, ">"), // Default value with type
+        seq("map", "(", $.fun, ",", commaSep1($.expr), ")"), // Map function with one or more expressions
+        seq("fold", "(", $.fun, ",", $.expr, ",", commaSep1($.expr), ")"), // Fold with initial value and list
+        seq($.fun, "(", commaSep($.expr), ")"), // Function call with zero or more expressions
+        seq("disclose", "(", $.expr, ")"), // Disclose with single expression
+        seq($.tref, "{", commaSep($.struct_arg), "}"), // Struct literal with type reference
+        seq("[", commaSep($.expr), "]"), // Array literal with optional trailing comma
+        $.id, // Identifier
+        seq("(", $.expr_seq, ")"), // Parenthesized expression sequence
+      ),
+
+    // Literal (lit)
+    //
+    // lit → true
+    //     → false
+    //     → nat
+    //     → str
+    //     → pad ( nat , str )
+    lit: ($) =>
+      choice(
+        "true",
+        "false",
+        $.nat,
+        $.str,
+        seq("pad", "(", $.nat, ",", $.str, ")"),
+      ),
+
+    // Structure-argument (struct-arg)
+    //
+    // struct-arg → expr
+    //            → id : expr
+    //            → ... expr
+    struct_arg: ($) =>
+      choice($.expr, seq($.id, ":", $.expr), seq("...", $.expr)),
+
+    // Function (fun)
+    //
+    // fun → id gargs^opt
+    //     → ( pattern-or-parg , … , pattern-or-parg ) return-type-decl^opt => block
+    //     → ( pattern-or-parg , … , pattern-or-parg ) return-type-decl^opt => expr
+    //     → ( fun )
+    fun: ($) =>
+      choice(
+        seq($.id, optional($.gargs)),
+        seq(
+          "(",
+          commaSep($._pattern_or_parg),
+          ")",
+          optional($._return_type_decl),
+          "=>",
+          choice($.block, $.expr),
+        ),
+        seq("(", $.fun, ")"),
+      ),
+
+    // Return-type-declaration (return-type-decl)
+    //
+    // return-type-decl → : type
+    _return_type_decl: ($) => seq(":", $.type),
+
+    // Pattern-or-pattern-argument (pattern-or-parg)
+    //
+    // pattern-or-parg → pattern
+    //                 → parg
+    _pattern_or_parg: ($) => choice($.pattern, $.parg),
+
     // OPS
     equals: ($) => "==",
     not_equals: ($) => "!=",
@@ -426,12 +642,12 @@ module.exports = grammar({
     //
     // identifiers have the same syntax as Typescript identifiers
     id: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    module_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    function_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    struct_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    enum_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    contract_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    tvar_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    _module_name: ($) => $.id,
+    _function_name: ($) => $.id,
+    _struct_name: ($) => $.id,
+    _enum_name: ($) => $.id,
+    _contract_name: ($) => $.id,
+    _tvar_name: ($) => $.id,
 
     // field-literal (nat)
     //
@@ -465,4 +681,13 @@ function commaSep1(rule) {
     repeat(seq(",", rule)),
     optional(","), // Optional trailing comma
   );
+}
+
+/**
+ * Creates a rule for zero or more comma-separated occurrences of another rule
+ * @param {Rule} rule - The rule to be repeated
+ * @returns {ChoiceRule} A rule that matches one or more occurrences of the input rule separated by commas
+ */
+function commaSep(rule) {
+  return optional(seq(rule, repeat(seq(",", rule)), optional(",")));
 }
