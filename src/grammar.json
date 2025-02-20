@@ -9,6 +9,22 @@
         "name": "_pelt"
       }
     },
+    "comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "//"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[^\\n]*"
+          }
+        ]
+      }
+    },
     "_pelt": {
       "type": "CHOICE",
       "members": [
@@ -1390,25 +1406,21 @@
       ]
     },
     "arg": {
-      "type": "PREC",
-      "value": 1,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "id"
-          },
-          {
-            "type": "STRING",
-            "value": ":"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "type"
-          }
-        ]
-      }
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "id"
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "type"
+        }
+      ]
     },
     "parg": {
       "type": "SEQ",
@@ -1951,8 +1963,16 @@
               "name": "expr"
             },
             {
-              "type": "SYMBOL",
-              "name": "str"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "str"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             },
             {
               "type": "STRING",
@@ -2445,7 +2465,7 @@
     },
     "_expr4": {
       "type": "PREC_LEFT",
-      "value": 0,
+      "value": 4,
       "content": {
         "type": "CHOICE",
         "members": [
@@ -3415,7 +3435,11 @@
   "extras": [
     {
       "type": "PATTERN",
-      "value": "\\s"
+      "value": "[\\s\\n]+"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
     }
   ],
   "conflicts": [
@@ -3446,6 +3470,10 @@
     ],
     [
       "stmt"
+    ],
+    [
+      "pattern",
+      "arg"
     ]
   ],
   "precedences": [],

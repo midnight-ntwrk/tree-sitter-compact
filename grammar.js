@@ -18,6 +18,12 @@ module.exports = grammar({
     [$.fun, $.term],
     [$.fun, $.pattern],
     [$.stmt],
+    [$.pattern, $.arg],
+  ],
+
+  extras: ($) => [
+    /[\s\n]+/,
+    $.comment, // Add comments as extras
   ],
 
   rules: {
@@ -25,6 +31,9 @@ module.exports = grammar({
     //
     // program → pelt … pelt eof
     source_file: ($) => repeat($._pelt),
+
+    // Comment rule
+    comment: ($) => token(seq("//", /[^\n]*/)),
 
     // Program-element (pelt)
     //
@@ -328,7 +337,7 @@ module.exports = grammar({
     // Argument (arg)
     //
     // arg → id : type
-    arg: ($) => prec(1, seq($.id, ":", $.type)),
+    arg: ($) => seq($.id, ":", $.type),
 
     // Pattern-argument (parg)
     //
@@ -409,7 +418,7 @@ module.exports = grammar({
         seq("if", "(", $.expr_seq, ")", $.stmt),
         seq("for", "(", "const", $.id, "of", $.nat, "..", $.nat, ")", $.stmt),
         seq("for", "(", "const", $.id, "of", $.expr_seq, ")", $.stmt),
-        seq("assert", $.expr, $.str, ";"),
+        seq("assert", $.expr, optional($.str), ";"),
         seq("const", $.pattern, "=", $.expr, ";"),
         seq("const", $.pattern, ":", $.type, "=", $.expr, ";"),
         $.block,
@@ -500,7 +509,7 @@ module.exports = grammar({
     //
     // expr4 → expr4 as type
     //       → expr5
-    _expr4: ($) => prec.left(choice(seq($._expr4, "as", $.type), $._expr5)),
+    _expr4: ($) => prec.left(4, choice(seq($._expr4, "as", $.type), $._expr5)),
 
     // Expression5 (expr5)
     //
