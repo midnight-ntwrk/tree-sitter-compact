@@ -11,14 +11,12 @@ module.exports = grammar({
   name: "compact",
 
   conflicts: ($) => [
+    [$.pattern, $.arg],
     [$.fun, $.term, $.tref],
-    [$.fun, $.term, $.pattern],
-    [$.term, $.pattern],
-    [$.tref],
+    [$.fun, $.pattern, $.term],
+    [$.pattern, $.term],
     [$.fun, $.term],
     [$.fun, $.pattern],
-    [$.stmt],
-    [$.pattern, $.arg],
   ],
 
   extras: ($) => [
@@ -371,7 +369,7 @@ module.exports = grammar({
     // Type-reference (tref)
     //
     // tref → id gargs^opt
-    tref: ($) => seq($.id, optional($.gargs)),
+    tref: ($) => prec.left(seq($.id, optional($.gargs))),
 
     // Type-size (tsize)
     //
@@ -407,21 +405,23 @@ module.exports = grammar({
     //      → const pattern : type = expr ;
     //      → block
     stmt: ($) =>
-      choice(
-        seq($.expr, "=", $.expr, ";"),
-        seq($.expr, "+=", $.expr, ";"),
-        seq($.expr, "-=", $.expr, ";"),
-        seq($.expr_seq, ";"),
-        seq("return", $.expr_seq, ";"),
-        seq("return", ";"),
-        seq("if", "(", $.expr_seq, ")", $.stmt, "else", $.stmt),
-        seq("if", "(", $.expr_seq, ")", $.stmt),
-        seq("for", "(", "const", $.id, "of", $.nat, "..", $.nat, ")", $.stmt),
-        seq("for", "(", "const", $.id, "of", $.expr_seq, ")", $.stmt),
-        seq("assert", $.expr, optional($.str), ";"),
-        seq("const", $.pattern, "=", $.expr, ";"),
-        seq("const", $.pattern, ":", $.type, "=", $.expr, ";"),
-        $.block,
+      prec.right(
+        choice(
+          seq($.expr, "=", $.expr, ";"),
+          seq($.expr, "+=", $.expr, ";"),
+          seq($.expr, "-=", $.expr, ";"),
+          seq($.expr_seq, ";"),
+          seq("return", $.expr_seq, ";"),
+          seq("return", ";"),
+          seq("if", "(", $.expr_seq, ")", $.stmt, "else", $.stmt),
+          seq("if", "(", $.expr_seq, ")", $.stmt),
+          seq("for", "(", "const", $.id, "of", $.nat, "..", $.nat, ")", $.stmt),
+          seq("for", "(", "const", $.id, "of", $.expr_seq, ")", $.stmt),
+          seq("assert", $.expr, optional($.str), ";"),
+          seq("const", $.pattern, "=", $.expr, ";"),
+          seq("const", $.pattern, ":", $.type, "=", $.expr, ";"),
+          $.block,
+        ),
       ),
 
     // Pattern (pattern)
