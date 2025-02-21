@@ -133,7 +133,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "module",
-        $._module_name,
+        $.module_name,
         optional($.gparams),
         "{",
         repeat($._pelt),
@@ -149,7 +149,7 @@ module.exports = grammar({
     //
     // generic-param → # tvar-name
     //               → tvar-name
-    generic_param: ($) => choice(seq("#", $._tvar_name), $._tvar_name),
+    generic_param: ($) => choice(seq("#", $.tvar_name), $.tvar_name),
 
     // Import-declaration (idecl)
     //
@@ -221,7 +221,7 @@ module.exports = grammar({
         optional($.export),
         optional($.pure),
         "circuit",
-        $._function_name,
+        $.function_name,
         optional($.gparams),
         "(",
         commaSep($.parg),
@@ -238,7 +238,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "circuit",
-        $._function_name,
+        $.function_name,
         optional($.gparams),
         "(",
         commaSep($.arg),
@@ -255,7 +255,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "witness",
-        $.id,
+        $.function_name,
         optional($.gparams),
         "(",
         commaSep($.arg),
@@ -272,7 +272,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "contract",
-        $._contract_name,
+        $.contract_name,
         "{",
         repeat($.ecdecl_circuit),
         "}",
@@ -303,7 +303,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "struct",
-        $._struct_name,
+        $.struct_name,
         optional($.gparams),
         choice($._struct_body_semicolon, $._struct_body_comma),
         optional(";"),
@@ -324,7 +324,7 @@ module.exports = grammar({
       seq(
         optional($.export),
         "enum",
-        $._enum_name,
+        $.enum_name,
         "{",
         commaSep1($.id),
         optional(","),
@@ -651,12 +651,12 @@ module.exports = grammar({
     //
     // identifiers have the same syntax as Typescript identifiers
     id: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    _module_name: ($) => $.id,
-    _function_name: ($) => $.id,
-    _struct_name: ($) => $.id,
-    _enum_name: ($) => $.id,
-    _contract_name: ($) => $.id,
-    _tvar_name: ($) => $.id,
+    module_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    function_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    struct_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    enum_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    contract_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
+    tvar_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
     // field-literal (nat)
     //
