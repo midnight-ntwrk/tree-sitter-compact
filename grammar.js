@@ -195,7 +195,7 @@ module.exports = grammar({
 
     // Ledger-declaration (ldecl)
     //
-    // ldecl → exportopt sealed^opt ledger id : type ;
+    // ldecl → export^opt sealed^opt ledger id : type ;
     ldecl: ($) =>
       seq(
         optional($.export),
@@ -215,7 +215,7 @@ module.exports = grammar({
 
     // Circuit-definition (cdefn)
     //
-    // cdefn → export^opt  pure^opt circuit function-name gparams^opt ( parg , … , parg ) : type block
+    // cdefn → export^opt pure^opt circuit function-name gparams^opt ( parg , … , parg ) : type block
     cdefn: ($) =>
       seq(
         optional($.export),
