@@ -596,9 +596,9 @@ module.exports = grammar({
     term: ($) =>
       choice(
         $.lit, // Literal (true, false, nat, str, pad)
-        seq("default", "<", $.type, ">"), // Default value with type
-        seq("map", "(", $.fun, ",", commaSep1($.expr), ")"), // Map function with one or more expressions
-        seq("fold", "(", $.fun, ",", field("init_value", $.expr), ",", commaSep1($.expr), ")"), // Fold with initial value and list
+        $.default_term, // Default value with type
+        $.map_term, // Map function with one or more expressions
+        $.fold_term, // Fold with initial value and list
         $.function_call_term, // Function call with zero or more expressions
         $.disclose_term, // Disclose with single expression
         $.struct_term, // Struct literal with type reference
@@ -607,6 +607,9 @@ module.exports = grammar({
         $.expr_seq_term, // Parenthesized expression sequence
       ),
 
+      default_term: ($) => seq("default", "<", field("type", $.type), ">"),
+      map_term: ($) => seq("map", "(", field("fun", $.fun), ",", commaSep1(field("expr", $.expr)), ")"),
+      fold_term: ($) => seq("fold", "(", field("fun", $.fun), ",", field("init_value", $.expr), ",", commaSep1(field("expr", $.expr)), ")"),
       struct_term: ($) => seq(field("tref", $.tref), "{", commaSep($.struct_arg), "}"),
       function_call_term: ($) => seq(field("fun", $.fun), "(", commaSep(field("expr", $.expr)), ")"),
       disclose_term : ($) => seq("disclose", "(", field("expr", $.expr), ")"),
