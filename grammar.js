@@ -556,7 +556,8 @@ module.exports = grammar({
     //
     // expr6 → expr6 * expr7
     //       → expr7
-    _expr6: ($) => prec.left(choice(seq($._expr6, "*", $._expr7), $._expr7)),
+    bin_mul_expr : ($) => prec.left(seq(field("left", $._expr6), field("operator", "*"), field("right", $._expr7))),
+    _expr6: ($) => choice($.bin_mul_expr, $._expr7),
 
     // Expression7 (expr7)
     //

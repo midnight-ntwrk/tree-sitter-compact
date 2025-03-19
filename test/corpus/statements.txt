@@ -104,10 +104,11 @@ circuit foo(): Bool {
         (return_stmt
             (expr_seq
             (expr
+                (bin_mul_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 if statement (no else)
@@ -743,11 +744,12 @@ circuit foo(): Bool {
                     (term
                     (id)))
                 (expr
+                    (bin_mul_expr
                     (term
-                    (lit
+                        (lit
                         (nat)))
                     (term
-                    (id)))))))))))
+                        (id))))))))))))
 
 ===============
 logical OR expression
@@ -889,10 +891,11 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (bin_mul_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 unary expression

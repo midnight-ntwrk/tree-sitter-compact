@@ -53,10 +53,11 @@ export circuit multiply (a: Field, b: Field) : Field {
         (return_stmt
             (expr_seq
             (expr
+                (bin_mul_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 pure circuit
@@ -115,10 +116,11 @@ export pure circuit divide(a: Field, b: Field) : Field {
         (return_stmt
             (expr_seq
             (expr
+                (bin_mul_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 circuit with generic parameters

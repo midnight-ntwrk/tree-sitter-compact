@@ -2923,35 +2923,51 @@
         ]
       }
     },
-    "_expr6": {
+    "bin_mul_expr": {
       "type": "PREC_LEFT",
       "value": 0,
       "content": {
-        "type": "CHOICE",
+        "type": "SEQ",
         "members": [
           {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "_expr6"
-              },
-              {
-                "type": "STRING",
-                "value": "*"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expr7"
-              }
-            ]
+            "type": "FIELD",
+            "name": "left",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_expr6"
+            }
           },
           {
-            "type": "SYMBOL",
-            "name": "_expr7"
+            "type": "FIELD",
+            "name": "operator",
+            "content": {
+              "type": "STRING",
+              "value": "*"
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "right",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_expr7"
+            }
           }
         ]
       }
+    },
+    "_expr6": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "bin_mul_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expr7"
+        }
+      ]
     },
     "not_expr": {
       "type": "SEQ",
