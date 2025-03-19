@@ -127,7 +127,8 @@ constructor (
                     (nat))))))
             (stmt
             (block
-                (stmt)))
+                (stmt
+                (return_stmt))))
             (stmt
             (block
                 (stmt

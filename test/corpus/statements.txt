@@ -63,10 +63,11 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (bin_sum_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 return statement (no value)
@@ -82,7 +83,8 @@ circuit foo(): Bool {
         (tref
         (id)))
     (block
-        (stmt))))
+        (stmt
+        (return_stmt)))))
 
 ===============
 return statement with expression
@@ -99,12 +101,13 @@ circuit foo(): Bool {
         (id)))
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
+                (term
                 (id))
-            (term
-                (id))))))))
+                (term
+                (id)))))))))
 
 ===============
 if statement (no else)
@@ -144,7 +147,7 @@ circuit foo(): Bool {
 if-else statement
 ===============
 circuit foo(): Bool {
-    if (x > 0) { x = 1; } else { x = 21; }
+    if (x > 0) { return x + 1; } else { x = 21; }
 }
 ---
 (source_file
@@ -167,14 +170,15 @@ circuit foo(): Bool {
             (stmt
             (block
                 (stmt
-                (assign_stmt
+                (return_stmt
+                    (expr_seq
                     (expr
-                    (term
-                        (id)))
-                    (expr
-                    (term
-                        (lit
-                        (nat))))))))
+                        (bin_sum_expr
+                        (term
+                            (id))
+                        (term
+                            (lit
+                            (nat))))))))))
             (stmt
             (block
                 (stmt
@@ -232,21 +236,22 @@ circuit foo(): Bool {
         (id)))
     (block
         (stmt
-        (expr
+        (assert_stmt
+            (expr
             (comparison_expr
-            (term
+                (term
                 (id))
-            (not_equals)
-            (term
+                (not_equals)
+                (term
                 (lit
-                (nat)))))
-        (str)))))
+                    (nat)))))
+            (str))))))
 
 ===============
 assert statement without message
 ===============
 circuit foo(): Bool {
-    assert x > 0;
+    assert x > 0 "fail!";
 }
 ---
 (source_file
@@ -257,13 +262,15 @@ circuit foo(): Bool {
         (id)))
     (block
         (stmt
-        (expr
+        (assert_stmt
+            (expr
             (term
-            (id))
+                (id))
             (greater_than)
             (term
-            (lit
-                (nat))))))))
+                (lit
+                (nat))))
+            (str))))))
 
 ===============
 const declaration with type
@@ -285,11 +292,12 @@ circuit foo(): Bool {
             (id))
             (type)
             (expr
-            (term
+            (bin_sum_expr
+                (term
                 (id))
-            (term
+                (term
                 (lit
-                (nat)))))))))
+                    (nat))))))))))
 
 ===============
 const declaration with destructuring pattern
@@ -348,7 +356,8 @@ circuit foo(): Bool {
                 (term
                     (lit
                     (nat))))))
-            (stmt))))))
+            (stmt
+            (return_stmt)))))))
 
 ===============
 boolean literal
@@ -692,11 +701,12 @@ circuit foo(): Bool {
                         (expr_seq_term
                             (expr_seq
                             (expr
+                                (bin_sum_expr
                                 (term
-                                (id))
+                                    (id))
                                 (term
-                                (lit
-                                    (nat))))))))
+                                    (lit
+                                    (nat)))))))))
                     (expr
                         (term
                         (id)))
@@ -831,10 +841,11 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (bin_sum_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 arithmetic expression (subtraction)
@@ -854,10 +865,11 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (bin_sum_expr
                 (term
-                (id))
+                    (id))
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 arithmetic expression (multiplication)

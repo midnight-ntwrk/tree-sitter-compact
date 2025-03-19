@@ -19,12 +19,14 @@ circuit add (x: Field, y: Field) : Field {
     (type)
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
-                (id))
-            (term
-                (id))))))))
+                (bin_sum_expr
+                (term
+                    (id))
+                (term
+                    (id))))))))))
 
 ===============
 export simple circuit
@@ -48,12 +50,13 @@ export circuit multiply (a: Field, b: Field) : Field {
     (type)
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
+                (term
                 (id))
-            (term
-                (id))))))))
+                (term
+                (id)))))))))
 
 ===============
 pure circuit
@@ -77,12 +80,14 @@ pure circuit subtract (a: Field, b: Field) : Field {
     (type)
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
-                (id))
-            (term
-                (id))))))))
+                (bin_sum_expr
+                (term
+                    (id))
+                (term
+                    (id))))))))))
 
 ===============
 export pure circuit
@@ -107,12 +112,13 @@ export pure circuit divide(a: Field, b: Field) : Field {
     (type)
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
+                (term
                 (id))
-            (term
-                (id))))))))
+                (term
+                (id)))))))))
 
 ===============
 circuit with generic parameters
@@ -134,8 +140,8 @@ circuit process<T> (data: Field) : Field {
     (type)
     (block
         (stmt
-        (expr_seq
+        (return_stmt
+            (expr_seq
             (expr
-            (term
-                (id))))))))
-
+                (term
+                (id)))))))))

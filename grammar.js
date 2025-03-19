@@ -418,16 +418,17 @@ module.exports = grammar({
         choice(
           $.assign_stmt,
           $.expression_sequence_stmt,
-          seq("return", field("value", $.expr_seq), ";"),
-          seq("return", ";"),
+          $.return_stmt,
           $.if_stmt,
           $.for_stmt,
-          seq("assert", field("condition", $.expr), optional(field("message", $.str)), ";"),
+          $.assert_stmt,
           $.const_stmt,
           $.block,
         ),
       ),
     
+      assert_stmt: ($) => seq("assert", field("condition", $.expr), field("message", $.str), ";"),
+      return_stmt: ($) => seq("return", optional(field("value", $.expr_seq)), ";"),
       if_stmt: ($) => prec.right(seq("if", "(", field("condition", $.expr_seq), ")", field("then_branch", $.stmt), optional(seq("else", field("else_branch", $.stmt))))),
       for_stmt: ($) => seq("for", "(", "const", field("counter", $.id), "of", 
           choice(
@@ -542,11 +543,11 @@ module.exports = grammar({
     // expr5 → expr5 + expr6
     //       → expr5 - expr6
     //       → expr6
+    bin_sum_expr : ($) => seq(field("left", $._expr5), field("operator", choice("+", "-")), field("right", $._expr6)),
     _expr5: ($) =>
       prec.left(
         choice(
-          seq($._expr5, "+", $._expr6),
-          seq($._expr5, "-", $._expr6),
+          $.bin_sum_expr,
           $._expr6,
         ),
       ),
