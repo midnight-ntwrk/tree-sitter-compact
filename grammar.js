@@ -160,7 +160,7 @@ module.exports = grammar({
     //
     // idecl → import import-name gargs^opt prefix^opt ;
     idecl: ($) =>
-      seq("import", field("id", $.import_name), optional($.gargs), optional($.prefix), ";"),
+      seq("import", field("id", $.import_name), optional(field("gargs", $.gargs)), optional(field("prefix", $.prefix)), ";"),
 
     // Import-name (import-name)
     //
@@ -176,7 +176,7 @@ module.exports = grammar({
     // Import-prefix (prefix)
     //
     // prefix → prefix id
-    prefix: ($) => seq("prefix", $.id),
+    prefix: ($) => seq("prefix", field("id", $.id)),
 
     // Export-modifier (export)
     //
@@ -241,12 +241,12 @@ module.exports = grammar({
     // edecl → export^opt circuit id gparams^opt ( arg , … , arg ) : type ;
     edecl: ($) =>
       seq(
-        optional($.export),
+        optional(field("export", $.export)),
         "circuit",
         field("id", $.function_name),
-        optional($.gparams),
+        optional(field("gparams", $.gparams)),
         "(",
-        commaSep($.arg),
+        field("args", commaSep(field("arg", $.arg))),
         ")",
         ":",
         field("type", $.type),
@@ -275,11 +275,11 @@ module.exports = grammar({
     // ecdecl	→ export^opt contract contract-name { ecdecl-circuit … ecdecl-circuit } ;^opt
     ecdecl: ($) =>
       seq(
-        optional($.export),
+        optional(field("export", $.export)),
         "contract",
-        $.contract_name,
+        field("name", $.contract_name),
         "{",
-        repeat($.ecdecl_circuit),
+        repeat(field("contract_circuit", $.ecdecl_circuit)),
         "}",
         optional(";"),
       ),
@@ -498,7 +498,8 @@ module.exports = grammar({
     //
     // expr1 → expr1 && expr2
     //       → expr2
-    _expr1: ($) => prec.left(choice(seq($._expr1, $.and, $._expr2), $._expr2)),
+    and_expr: ($) => seq(field("left", $._expr1), $.and, field("right", $._expr2)),
+    _expr1: ($) => prec.left(choice($.and_expr, $._expr2)),
 
     // Expression2 (expr2)
     //
@@ -521,13 +522,11 @@ module.exports = grammar({
     //       → expr4 >= expr4
     //       → expr4 > expr4
     //       → expr4
+    rel_comparison_expr: ($) => seq(field("left", $._expr3), field("operator", choice($.less_than, $.less_than_or_equal, $.greater_than_or_equal, $.greater_than)), field("right", $._expr4)),
     _expr3: ($) =>
       prec.left(
         choice(
-          seq($._expr4, $.less_than, $._expr4),
-          seq($._expr4, $.less_than_or_equal, $._expr4),
-          seq($._expr4, $.greater_than_or_equal, $._expr4),
-          seq($._expr4, $.greater_than, $._expr4),
+          $.rel_comparison_expr,
           $._expr4,
         ),
       ),
@@ -536,7 +535,8 @@ module.exports = grammar({
     //
     // expr4 → expr4 as type
     //       → expr5
-    _expr4: ($) => prec.left(4, choice(seq($._expr4, "as", $.type), $._expr5)),
+    cast_expr : ($) => seq(field("expr", $._expr4), "as", field("type", $.type)),
+    _expr4: ($) => prec.left(4, choice($.cast_expr, $._expr5)),
 
     // Expression5 (expr5)
     //
@@ -573,11 +573,12 @@ module.exports = grammar({
     //       → expr8 . id
     //       → expr8 . id ( expr , … , expr )
     //       → term
+    index_access_expr: ($) => prec.left(seq(field("base", $._expr8), "[", field("index", $.nat), "]")),
     member_access_expr: ($) => prec.left(seq(field("base", $._expr8), ".", field("member", $.id), optional(field("arguments", seq("(", commaSep(field("expr", $.expr)), ")"))))),
     _expr8: ($) =>
       prec.left(
         choice(
-          seq($._expr8, "[", $.nat, "]"),
+          $.index_access_expr,
           $.member_access_expr,
           $.term,
         ),

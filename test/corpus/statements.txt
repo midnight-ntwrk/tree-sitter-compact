@@ -128,12 +128,13 @@ circuit foo(): Bool {
         (if_stmt
             (expr_seq
             (expr
+                (rel_comparison_expr
                 (term
-                (id))
+                    (id))
                 (greater_than)
                 (term
-                (lit
-                    (nat)))))
+                    (lit
+                    (nat))))))
             (stmt
             (assign_stmt
                 (expr
@@ -162,12 +163,13 @@ circuit foo(): Bool {
         (if_stmt
             (expr_seq
             (expr
+                (rel_comparison_expr
                 (term
-                (id))
+                    (id))
                 (greater_than)
                 (term
-                (lit
-                    (nat)))))
+                    (lit
+                    (nat))))))
             (stmt
             (block
                 (stmt
@@ -265,12 +267,13 @@ circuit foo(): Bool {
         (stmt
         (assert_stmt
             (expr
-            (term
+            (rel_comparison_expr
+                (term
                 (id))
-            (greater_than)
-            (term
+                (greater_than)
+                (term
                 (lit
-                (nat))))
+                    (nat)))))
             (str))))))
 
 ===============
@@ -734,12 +737,13 @@ circuit foo(): Bool {
             (expr_seq
             (expr
                 (conditional_expr
-                (term
+                (rel_comparison_expr
+                    (term
                     (id))
-                (greater_than)
-                (term
+                    (greater_than)
+                    (term
                     (lit
-                    (nat)))
+                        (nat))))
                 (expr
                     (term
                     (id)))
@@ -794,11 +798,12 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (and_expr
                 (term
-                (id))
+                    (id))
                 (and)
                 (term
-                (id)))))))))
+                    (id))))))))))
 
 ===============
 comparison expression
@@ -987,9 +992,10 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (index_access_expr
                 (term
-                (id))
-                (nat))))))))
+                    (id))
+                (nat)))))))))
 
 ===============
 type cast expression
@@ -1009,6 +1015,7 @@ circuit foo(): Bool {
         (expression_sequence_stmt
             (expr_seq
             (expr
+                (cast_expr
                 (term
-                (id))
-                (type))))))))
+                    (id))
+                (type)))))))))

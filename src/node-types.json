@@ -1,5 +1,109 @@
 [
   {
+    "type": "and_expr",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "and_expr",
+            "named": true
+          },
+          {
+            "type": "bin_mul_expr",
+            "named": true
+          },
+          {
+            "type": "bin_sum_expr",
+            "named": true
+          },
+          {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
+            "type": "comparison_expr",
+            "named": true
+          },
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "not_expr",
+            "named": true
+          },
+          {
+            "type": "rel_comparison_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "bin_mul_expr",
+            "named": true
+          },
+          {
+            "type": "bin_sum_expr",
+            "named": true
+          },
+          {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
+            "type": "comparison_expr",
+            "named": true
+          },
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "not_expr",
+            "named": true
+          },
+          {
+            "type": "rel_comparison_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "and",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "arg",
     "named": true,
     "fields": {
@@ -100,27 +204,19 @@
     "named": true,
     "fields": {
       "left": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
           {
             "type": "bin_mul_expr",
             "named": true
           },
           {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -144,23 +240,15 @@
         ]
       },
       "right": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -180,17 +268,9 @@
     "named": true,
     "fields": {
       "left": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
           {
             "type": "bin_mul_expr",
             "named": true
@@ -200,11 +280,11 @@
             "named": true
           },
           {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -232,27 +312,19 @@
         ]
       },
       "right": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
           {
             "type": "bin_mul_expr",
             "named": true
           },
           {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -293,6 +365,56 @@
         "types": [
           {
             "type": "tsize",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "cast_expr",
+    "named": true,
+    "fields": {
+      "expr": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "bin_mul_expr",
+            "named": true
+          },
+          {
+            "type": "bin_sum_expr",
+            "named": true
+          },
+          {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "not_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
             "named": true
           }
         ]
@@ -380,21 +502,9 @@
     "named": true,
     "fields": {
       "left": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "as",
-            "named": false
-          },
           {
             "type": "bin_mul_expr",
             "named": true
@@ -404,23 +514,15 @@
             "named": true
           },
           {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
             "type": "comparison_expr",
             "named": true
           },
           {
-            "type": "greater_than",
-            "named": true
-          },
-          {
-            "type": "greater_than_or_equal",
-            "named": true
-          },
-          {
-            "type": "less_than",
-            "named": true
-          },
-          {
-            "type": "less_than_or_equal",
+            "type": "index_access_expr",
             "named": true
           },
           {
@@ -428,19 +530,15 @@
             "named": true
           },
           {
-            "type": "nat",
-            "named": true
-          },
-          {
             "type": "not_expr",
             "named": true
           },
           {
-            "type": "term",
+            "type": "rel_comparison_expr",
             "named": true
           },
           {
-            "type": "type",
+            "type": "term",
             "named": true
           }
         ]
@@ -460,21 +558,9 @@
         ]
       },
       "right": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
-          {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "as",
-            "named": false
-          },
           {
             "type": "bin_mul_expr",
             "named": true
@@ -484,19 +570,11 @@
             "named": true
           },
           {
-            "type": "greater_than",
+            "type": "cast_expr",
             "named": true
           },
           {
-            "type": "greater_than_or_equal",
-            "named": true
-          },
-          {
-            "type": "less_than",
-            "named": true
-          },
-          {
-            "type": "less_than_or_equal",
+            "type": "index_access_expr",
             "named": true
           },
           {
@@ -504,19 +582,15 @@
             "named": true
           },
           {
-            "type": "nat",
-            "named": true
-          },
-          {
             "type": "not_expr",
             "named": true
           },
           {
-            "type": "term",
+            "type": "rel_comparison_expr",
             "named": true
           },
           {
-            "type": "type",
+            "type": "term",
             "named": true
           }
         ]
@@ -528,24 +602,12 @@
     "named": true,
     "fields": {
       "condition": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "and",
+            "type": "and_expr",
             "named": true
-          },
-          {
-            "type": "as",
-            "named": false
           },
           {
             "type": "bin_mul_expr",
@@ -556,31 +618,19 @@
             "named": true
           },
           {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
             "type": "comparison_expr",
             "named": true
           },
           {
-            "type": "greater_than",
-            "named": true
-          },
-          {
-            "type": "greater_than_or_equal",
-            "named": true
-          },
-          {
-            "type": "less_than",
-            "named": true
-          },
-          {
-            "type": "less_than_or_equal",
+            "type": "index_access_expr",
             "named": true
           },
           {
             "type": "member_access_expr",
-            "named": true
-          },
-          {
-            "type": "nat",
             "named": true
           },
           {
@@ -592,11 +642,11 @@
             "named": true
           },
           {
-            "type": "term",
+            "type": "rel_comparison_expr",
             "named": true
           },
           {
-            "type": "type",
+            "type": "term",
             "named": true
           }
         ]
@@ -699,24 +749,37 @@
   {
     "type": "ecdecl",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "contract_name",
-          "named": true
-        },
-        {
-          "type": "ecdecl_circuit",
-          "named": true
-        },
-        {
-          "type": "export",
-          "named": true
-        }
-      ]
+    "fields": {
+      "contract_circuit": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "ecdecl_circuit",
+            "named": true
+          }
+        ]
+      },
+      "export": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "export",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "contract_name",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -769,6 +832,50 @@
     "type": "edecl",
     "named": true,
     "fields": {
+      "arg": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "arg",
+            "named": true
+          }
+        ]
+      },
+      "args": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": ",",
+            "named": false
+          },
+          {
+            "type": "arg",
+            "named": true
+          }
+        ]
+      },
+      "export": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "export",
+            "named": true
+          }
+        ]
+      },
+      "gparams": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "gparams",
+            "named": true
+          }
+        ]
+      },
       "id": {
         "multiple": false,
         "required": true,
@@ -789,24 +896,6 @@
           }
         ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "arg",
-          "named": true
-        },
-        {
-          "type": "export",
-          "named": true
-        },
-        {
-          "type": "gparams",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -860,11 +949,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "and",
+          "type": "and_expr",
           "named": true
         },
         {
@@ -876,6 +965,10 @@
           "named": true
         },
         {
+          "type": "cast_expr",
+          "named": true
+        },
+        {
           "type": "comparison_expr",
           "named": true
         },
@@ -884,27 +977,11 @@
           "named": true
         },
         {
-          "type": "greater_than",
-          "named": true
-        },
-        {
-          "type": "greater_than_or_equal",
-          "named": true
-        },
-        {
-          "type": "less_than",
-          "named": true
-        },
-        {
-          "type": "less_than_or_equal",
+          "type": "index_access_expr",
           "named": true
         },
         {
           "type": "member_access_expr",
-          "named": true
-        },
-        {
-          "type": "nat",
           "named": true
         },
         {
@@ -916,11 +993,11 @@
           "named": true
         },
         {
-          "type": "term",
+          "type": "rel_comparison_expr",
           "named": true
         },
         {
-          "type": "type",
+          "type": "term",
           "named": true
         }
       ]
@@ -1270,6 +1347,16 @@
     "type": "idecl",
     "named": true,
     "fields": {
+      "gargs": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "gargs",
+            "named": true
+          }
+        ]
+      },
       "id": {
         "multiple": false,
         "required": true,
@@ -1279,21 +1366,17 @@
             "named": true
           }
         ]
+      },
+      "prefix": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "prefix",
+            "named": true
+          }
+        ]
       }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "gargs",
-          "named": true
-        },
-        {
-          "type": "prefix",
-          "named": true
-        }
-      ]
     }
   },
   {
@@ -1361,6 +1444,40 @@
         "types": [
           {
             "type": "file",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "index_access_expr",
+    "named": true,
+    "fields": {
+      "base": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      },
+      "index": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "nat",
             "named": true
           }
         ]
@@ -1614,23 +1731,15 @@
         ]
       },
       "base": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -1676,23 +1785,15 @@
     "named": true,
     "fields": {
       "expr": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "member_access_expr",
+            "type": "index_access_expr",
             "named": true
           },
           {
-            "type": "nat",
+            "type": "member_access_expr",
             "named": true
           },
           {
@@ -1737,24 +1838,12 @@
     "named": true,
     "fields": {
       "left": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "and",
+            "type": "and_expr",
             "named": true
-          },
-          {
-            "type": "as",
-            "named": false
           },
           {
             "type": "bin_mul_expr",
@@ -1765,31 +1854,19 @@
             "named": true
           },
           {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
             "type": "comparison_expr",
             "named": true
           },
           {
-            "type": "greater_than",
-            "named": true
-          },
-          {
-            "type": "greater_than_or_equal",
-            "named": true
-          },
-          {
-            "type": "less_than",
-            "named": true
-          },
-          {
-            "type": "less_than_or_equal",
+            "type": "index_access_expr",
             "named": true
           },
           {
             "type": "member_access_expr",
-            "named": true
-          },
-          {
-            "type": "nat",
             "named": true
           },
           {
@@ -1801,34 +1878,22 @@
             "named": true
           },
           {
-            "type": "term",
+            "type": "rel_comparison_expr",
             "named": true
           },
           {
-            "type": "type",
+            "type": "term",
             "named": true
           }
         ]
       },
       "right": {
-        "multiple": true,
+        "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "[",
-            "named": false
-          },
-          {
-            "type": "]",
-            "named": false
-          },
-          {
-            "type": "and",
+            "type": "and_expr",
             "named": true
-          },
-          {
-            "type": "as",
-            "named": false
           },
           {
             "type": "bin_mul_expr",
@@ -1839,23 +1904,15 @@
             "named": true
           },
           {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
             "type": "comparison_expr",
             "named": true
           },
           {
-            "type": "greater_than",
-            "named": true
-          },
-          {
-            "type": "greater_than_or_equal",
-            "named": true
-          },
-          {
-            "type": "less_than",
-            "named": true
-          },
-          {
-            "type": "less_than_or_equal",
+            "type": "index_access_expr",
             "named": true
           },
           {
@@ -1863,19 +1920,15 @@
             "named": true
           },
           {
-            "type": "nat",
-            "named": true
-          },
-          {
             "type": "not_expr",
             "named": true
           },
           {
-            "type": "term",
+            "type": "rel_comparison_expr",
             "named": true
           },
           {
-            "type": "type",
+            "type": "term",
             "named": true
           }
         ]
@@ -2140,16 +2193,117 @@
   {
     "type": "prefix",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "id",
-          "named": true
-        }
-      ]
+    "fields": {
+      "id": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "id",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "rel_comparison_expr",
+    "named": true,
+    "fields": {
+      "left": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "bin_mul_expr",
+            "named": true
+          },
+          {
+            "type": "bin_sum_expr",
+            "named": true
+          },
+          {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "not_expr",
+            "named": true
+          },
+          {
+            "type": "rel_comparison_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      },
+      "operator": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "greater_than",
+            "named": true
+          },
+          {
+            "type": "greater_than_or_equal",
+            "named": true
+          },
+          {
+            "type": "less_than",
+            "named": true
+          },
+          {
+            "type": "less_than_or_equal",
+            "named": true
+          }
+        ]
+      },
+      "right": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "bin_mul_expr",
+            "named": true
+          },
+          {
+            "type": "bin_sum_expr",
+            "named": true
+          },
+          {
+            "type": "cast_expr",
+            "named": true
+          },
+          {
+            "type": "index_access_expr",
+            "named": true
+          },
+          {
+            "type": "member_access_expr",
+            "named": true
+          },
+          {
+            "type": "not_expr",
+            "named": true
+          },
+          {
+            "type": "term",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
